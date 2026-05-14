@@ -1,4 +1,6 @@
 const STORAGE_KEY = "daily-todolist-tasks-v2";
+const SESSION_KEY = "daily-todolist-session-id";
+const SYNC_INTERVAL_MS = 6000;
 
 const taskTypes = {
   routine: { label: "Sinh hoạt", color: "#0f766e" },
@@ -43,6 +45,9 @@ const els = {
   dayProgressText: document.querySelector("#dayProgressText"),
   dayProgressBar: document.querySelector("#dayProgressBar"),
   typeStats: document.querySelector("#typeStats"),
+  sessionInput: document.querySelector("#sessionInput"),
+  sessionStatus: document.querySelector("#sessionStatus"),
+  connectSession: document.querySelector("#connectSession"),
   editToggle: document.querySelector("#editToggle"),
   addTaskButton: document.querySelector("#addTaskButton"),
   saveButton: document.querySelector("#saveButton"),
@@ -62,6 +67,9 @@ const els = {
 let tasks = loadTasks();
 let editing = false;
 let editingTaskId = null;
+let currentSessionId = loadSessionId();
+let lastRemoteUpdatedAt = "";
+let isSyncing = false;
 
 function normalizeTask(raw, index) {
   const rawTime = raw.time || raw.startTime || "00:00";
@@ -129,11 +137,43 @@ function loadTasks() {
   }
 }
 
-function saveTasks(showMessage = false) {
+function loadSessionId() {
+  try {
+    return localStorage.getItem(SESSION_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+function saveSessionId(sessionId) {
+  try {
+    localStorage.setItem(SESSION_KEY, sessionId);
+  } catch {
+    // The app still works without local persistence.
+  }
+}
+
+function normalizeSessionId(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 64);
+}
+
+function persistLocalTasks() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
   } catch {
     // Storage can be unavailable in embedded browsers; the UI should still work.
+  }
+}
+
+function saveTasks(showMessage = false) {
+  persistLocalTasks();
+  if (currentSessionId) {
+    syncTasksToServer(showMessage);
   }
   if (showMessage) showToast("Đã lưu danh sách");
 }
@@ -178,9 +218,22 @@ function render() {
   const now = new Date();
   const activeIndex = getActiveTaskIndex(getCurrentMinutes(now));
   renderHeader(now);
+  renderSession();
   renderProgress();
   renderTypeStats();
   renderTasks(activeIndex, formatClock(now));
+}
+
+function renderSession() {
+  if (currentSessionId) {
+    els.sessionStatus.textContent = lastRemoteUpdatedAt
+      ? `Đang đồng bộ: ${currentSessionId}`
+      : `Đã chọn mã: ${currentSessionId}`;
+    els.connectSession.textContent = "Đổi mã";
+  } else {
+    els.sessionStatus.textContent = "Chưa kết nối đồng bộ";
+    els.connectSession.textContent = "Kết nối";
+  }
 }
 
 function renderHeader(now) {
@@ -412,6 +465,79 @@ function showToast(message) {
   }, 1800);
 }
 
+async function connectSession() {
+  const sessionId = normalizeSessionId(els.sessionInput.value);
+  if (!sessionId) {
+    showToast("Nhập mã cá nhân để đồng bộ");
+    return;
+  }
+
+  currentSessionId = sessionId;
+  saveSessionId(sessionId);
+  renderSession();
+
+  try {
+    const response = await fetch(`/api/sessions/${encodeURIComponent(sessionId)}/tasks`);
+    if (response.status === 404) {
+      await syncTasksToServer(false);
+      showToast("Đã tạo phiên đồng bộ mới");
+      return;
+    }
+
+    if (!response.ok) throw new Error("load failed");
+    const payload = await response.json();
+    if (Array.isArray(payload.tasks)) {
+      tasks = sortTasks(payload.tasks.map(normalizeTask));
+      lastRemoteUpdatedAt = payload.updatedAt || "";
+      persistLocalTasks();
+      render();
+      showToast("Đã tải dữ liệu phiên");
+    }
+  } catch {
+    showToast("Chưa kết nối được server đồng bộ");
+  }
+}
+
+async function syncTasksToServer(showMessage = false) {
+  if (!currentSessionId || isSyncing) return;
+  isSyncing = true;
+
+  try {
+    const response = await fetch(`/api/sessions/${encodeURIComponent(currentSessionId)}/tasks`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tasks }),
+    });
+    if (!response.ok) throw new Error("sync failed");
+    const payload = await response.json();
+    lastRemoteUpdatedAt = payload.updatedAt || "";
+    renderSession();
+    if (showMessage) showToast("Đã đồng bộ dữ liệu");
+  } catch {
+    if (showMessage) showToast("Không đồng bộ được server");
+  } finally {
+    isSyncing = false;
+  }
+}
+
+async function pullRemoteTasks() {
+  if (!currentSessionId || isSyncing || els.dialog.open) return;
+
+  try {
+    const response = await fetch(`/api/sessions/${encodeURIComponent(currentSessionId)}/tasks`);
+    if (!response.ok) return;
+    const payload = await response.json();
+    if (!Array.isArray(payload.tasks) || !payload.updatedAt || payload.updatedAt === lastRemoteUpdatedAt) return;
+
+    tasks = sortTasks(payload.tasks.map(normalizeTask));
+    lastRemoteUpdatedAt = payload.updatedAt;
+    persistLocalTasks();
+    render();
+  } catch {
+    // Polling should be silent; manual save/connect reports errors.
+  }
+}
+
 els.editToggle.addEventListener("click", () => {
   editing = !editing;
   render();
@@ -419,6 +545,10 @@ els.editToggle.addEventListener("click", () => {
 
 els.addTaskButton.addEventListener("click", () => openTaskDialog());
 els.saveButton.addEventListener("click", () => saveTasks(true));
+els.connectSession.addEventListener("click", connectSession);
+els.sessionInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") connectSession();
+});
 els.form.addEventListener("submit", submitTask);
 els.closeDialog.addEventListener("click", closeTaskDialog);
 els.cancelTask.addEventListener("click", closeTaskDialog);
@@ -427,4 +557,9 @@ els.dialog.addEventListener("click", (event) => {
 });
 
 render();
+if (currentSessionId) {
+  els.sessionInput.value = currentSessionId;
+  connectSession();
+}
 setInterval(render, 1000);
+setInterval(pullRemoteTasks, SYNC_INTERVAL_MS);

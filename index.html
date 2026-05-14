@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=9" />
+    <link rel="stylesheet" href="styles.css?v=10" />
   </head>
   <body>
     <main class="phone-shell" aria-label="Ứng dụng Todolist hằng ngày">
@@ -53,6 +53,17 @@
               <span id="taskProgressBar"></span>
             </div>
             <p id="remainingText">Còn 18 việc cần hoàn thành</p>
+          </div>
+        </section>
+
+        <section class="session-card" aria-label="Đồng bộ dữ liệu cá nhân">
+          <div class="session-copy">
+            <strong>Phiên cá nhân</strong>
+            <span id="sessionStatus">Chưa kết nối đồng bộ</span>
+          </div>
+          <div class="session-controls">
+            <input id="sessionInput" type="text" inputmode="latin" autocomplete="off" placeholder="ma-ca-nhan" />
+            <button id="connectSession" class="outline-button session-button" type="button">Kết nối</button>
           </div>
         </section>
 
@@ -165,6 +176,6 @@
     </dialog>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=9"></script>
+    <script src="app.js?v=10"></script>
   </body>
 </html>

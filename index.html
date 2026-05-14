@@ -10,24 +10,42 @@
       href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=10" />
+    <link rel="stylesheet" href="styles.css?v=15" />
   </head>
   <body>
     <main class="phone-shell" aria-label="Ứng dụng Todolist hằng ngày">
       <section class="app-screen">
         <header class="header">
           <div class="hero-copy">
-            <h1>Todolist hằng ngày</h1>
+            <div class="title-row">
+              <h1>Todolist hằng ngày</h1>
+              <button id="settingsToggle" class="settings-button" type="button" aria-label="Mở cài đặt" aria-expanded="false">
+                <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"></path>
+                  <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.04.04a2.05 2.05 0 0 1-2.9 2.9l-.04-.04A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6l-.03.03a2.05 2.05 0 0 1-3.94 0L10 20a1.7 1.7 0 0 0-1-.6 1.7 1.7 0 0 0-1.88.34l-.04.04a2.05 2.05 0 0 1-2.9-2.9l.04-.04A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1l-.03-.03a2.05 2.05 0 0 1 0-3.94L4 10a1.7 1.7 0 0 0 .6-1 1.7 1.7 0 0 0-.34-1.88l-.04-.04a2.05 2.05 0 0 1 2.9-2.9l.04.04A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6l.03-.03a2.05 2.05 0 0 1 3.94 0L14 4a1.7 1.7 0 0 0 1 .6 1.7 1.7 0 0 0 1.88-.34l.04-.04a2.05 2.05 0 0 1 2.9 2.9l-.04.04A1.7 1.7 0 0 0 19.4 9c.08.37.28.72.6 1l.03.03a2.05 2.05 0 0 1 0 3.94L20 14c-.32.28-.52.63-.6 1Z"></path>
+                </svg>
+              </button>
+            </div>
             <p>Theo dõi công việc trong 1 ngày</p>
           </div>
           <div class="top-actions">
             <button class="pill-button today-button" type="button">
-              <span class="icon icon-calendar" aria-hidden="true"></span>
+              <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 2v4"></path>
+                <path d="M16 2v4"></path>
+                <rect x="3" y="4" width="18" height="18" rx="3"></rect>
+                <path d="M3 10h18"></path>
+              </svg>
               <span>Hôm nay</span>
-              <span class="icon icon-chevron" aria-hidden="true"></span>
+              <svg class="icon-svg chevron-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m6 9 6 6 6-6"></path>
+              </svg>
             </button>
             <article class="current-time-widget" aria-live="polite">
-              <span class="icon icon-clock" aria-hidden="true"></span>
+              <svg class="icon-svg clock-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 7v5l4 2"></path>
+              </svg>
               <span class="time-divider" aria-hidden="true"></span>
               <span>
                 <span class="widget-label">Hiện tại</span>
@@ -35,7 +53,10 @@
               </span>
             </article>
             <button id="editToggle" class="outline-button" type="button" aria-pressed="false">
-              <span class="icon icon-edit" aria-hidden="true"></span>
+              <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+              </svg>
               <span>Chỉnh sửa</span>
             </button>
           </div>
@@ -56,37 +77,45 @@
           </div>
         </section>
 
-        <section class="session-card" aria-label="Đồng bộ dữ liệu cá nhân">
-          <div class="session-copy">
-            <strong>Phiên cá nhân</strong>
-            <span id="sessionStatus">Chưa kết nối đồng bộ</span>
-          </div>
-          <div class="session-controls">
-            <input id="sessionInput" type="text" inputmode="latin" autocomplete="off" placeholder="ma-ca-nhan" />
-            <button id="connectSession" class="outline-button session-button" type="button">Kết nối</button>
-          </div>
-        </section>
-
-        <section class="day-progress-card" aria-label="Tiến độ trong ngày">
-          <span class="sun-mark" aria-hidden="true"></span>
-          <div>
-            <div class="day-progress-title">
-              <strong>Tiến độ trong ngày</strong>
-              <span id="dayProgressText">0% · Đã qua 0h 00m</span>
+        <section id="settingsPanel" class="settings-panel" hidden aria-label="Cài đặt và thông tin mở rộng">
+          <details class="collapsible-card session-panel">
+            <summary>
+              <span>Phiên cá nhân</span>
+              <small id="sessionStatus">Chưa kết nối đồng bộ</small>
+            </summary>
+            <div class="session-card" aria-label="Đồng bộ dữ liệu cá nhân">
+              <div class="session-controls">
+                <input id="sessionInput" type="text" inputmode="latin" autocomplete="off" placeholder="ma-ca-nhan" />
+                <button id="connectSession" class="outline-button session-button" type="button">Kết nối</button>
+              </div>
             </div>
-            <div class="bar day-bar" aria-hidden="true">
-              <span id="dayProgressBar"></span>
-            </div>
-          </div>
-          <span class="moon-mark" aria-hidden="true"></span>
-        </section>
+          </details>
 
-        <section class="type-stats-card" aria-label="Thống kê thời gian theo loại công việc">
-          <div class="stats-head">
-            <strong>Thống kê thời gian</strong>
-            <span>Theo loại công việc</span>
-          </div>
-          <div id="typeStats" class="type-stats-grid"></div>
+          <details class="collapsible-card day-panel">
+            <summary>
+              <span>Tiến độ trong ngày</span>
+              <small id="dayProgressText">0% · Đã qua 0h 00m</small>
+            </summary>
+            <div class="day-progress-card" aria-label="Tiến độ trong ngày">
+              <span class="sun-mark" aria-hidden="true"></span>
+              <div>
+                <div class="bar day-bar" aria-hidden="true">
+                  <span id="dayProgressBar"></span>
+                </div>
+              </div>
+              <span class="moon-mark" aria-hidden="true"></span>
+            </div>
+          </details>
+
+          <details class="collapsible-card stats-panel">
+            <summary>
+              <span>Thống kê thời gian</span>
+              <small>Theo loại công việc</small>
+            </summary>
+            <section class="type-stats-card" aria-label="Thống kê thời gian theo loại công việc">
+              <div id="typeStats" class="type-stats-grid"></div>
+            </section>
+          </details>
         </section>
 
         <section class="timeline-card" aria-label="Danh sách công việc dạng timeline">
@@ -120,11 +149,19 @@
 
         <footer class="bottom-actions">
           <button id="addTaskButton" class="outline-button add-inline" type="button">
-            <span class="icon icon-plus-box" aria-hidden="true"></span>
+            <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+              <path d="M12 8v8"></path>
+              <path d="M8 12h8"></path>
+            </svg>
             <span>Thêm việc</span>
           </button>
           <button id="saveButton" class="pill-button save-button" type="button">
-            <span class="icon icon-save" aria-hidden="true"></span>
+            <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+              <path d="M17 21v-8H7v8"></path>
+              <path d="M7 3v5h8"></path>
+            </svg>
             <span>Lưu danh sách</span>
           </button>
         </footer>
@@ -137,7 +174,10 @@
         <div class="dialog-head">
           <h2 id="dialogTitle">Thêm việc</h2>
           <button class="icon-button" value="cancel" type="button" id="closeDialog" aria-label="Đóng">
-            <span class="icon icon-close" aria-hidden="true"></span>
+            <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
           </button>
         </div>
         <label>
@@ -176,6 +216,6 @@
     </dialog>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=10"></script>
+    <script src="app.js?v=12"></script>
   </body>
 </html>

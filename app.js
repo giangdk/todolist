@@ -45,6 +45,8 @@ const els = {
   dayProgressText: document.querySelector("#dayProgressText"),
   dayProgressBar: document.querySelector("#dayProgressBar"),
   typeStats: document.querySelector("#typeStats"),
+  settingsToggle: document.querySelector("#settingsToggle"),
+  settingsPanel: document.querySelector("#settingsPanel"),
   sessionInput: document.querySelector("#sessionInput"),
   sessionStatus: document.querySelector("#sessionStatus"),
   connectSession: document.querySelector("#connectSession"),
@@ -234,6 +236,13 @@ function renderSession() {
     els.sessionStatus.textContent = "Chưa kết nối đồng bộ";
     els.connectSession.textContent = "Kết nối";
   }
+}
+
+function toggleSettingsPanel() {
+  const shouldOpen = els.settingsPanel.hidden;
+  els.settingsPanel.hidden = !shouldOpen;
+  els.settingsToggle.setAttribute("aria-expanded", String(shouldOpen));
+  els.settingsToggle.setAttribute("aria-label", shouldOpen ? "Ẩn cài đặt" : "Mở cài đặt");
 }
 
 function renderHeader(now) {
@@ -545,6 +554,7 @@ els.editToggle.addEventListener("click", () => {
 
 els.addTaskButton.addEventListener("click", () => openTaskDialog());
 els.saveButton.addEventListener("click", () => saveTasks(true));
+els.settingsToggle.addEventListener("click", toggleSettingsPanel);
 els.connectSession.addEventListener("click", connectSession);
 els.sessionInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") connectSession();

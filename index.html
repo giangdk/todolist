@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=4" />
+    <link rel="stylesheet" href="styles.css?v=9" />
   </head>
   <body>
     <main class="phone-shell" aria-label="Ứng dụng Todolist hằng ngày">
@@ -68,6 +68,14 @@
             </div>
           </div>
           <span class="moon-mark" aria-hidden="true"></span>
+        </section>
+
+        <section class="type-stats-card" aria-label="Thống kê thời gian theo loại công việc">
+          <div class="stats-head">
+            <strong>Thống kê thời gian</strong>
+            <span>Theo loại công việc</span>
+          </div>
+          <div id="typeStats" class="type-stats-grid"></div>
         </section>
 
         <section class="timeline-card" aria-label="Danh sách công việc dạng timeline">
@@ -133,6 +141,18 @@
           <span>Tên công việc</span>
           <input id="titleInput" type="text" required maxlength="120" placeholder="Nhập việc cần làm" />
         </label>
+        <label>
+          <span>Loại công việc</span>
+          <select id="typeInput" required>
+            <option value="routine">Sinh hoạt</option>
+            <option value="work">Công việc</option>
+            <option value="personal">Việc cá nhân</option>
+            <option value="travel">Di chuyển</option>
+            <option value="health">Sức khoẻ</option>
+            <option value="rest">Nghỉ ngơi</option>
+            <option value="study">Học tập</option>
+          </select>
+        </label>
         <label class="checkbox-row">
           <input id="completedInput" type="checkbox" />
           <span>Đã hoàn thành</span>
@@ -145,6 +165,6 @@
     </dialog>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=4"></script>
+    <script src="app.js?v=9"></script>
   </body>
 </html>

@@ -1,24 +1,34 @@
 const STORAGE_KEY = "daily-todolist-tasks-v2";
 
+const taskTypes = {
+  routine: { label: "Sinh hoạt", color: "#0f766e" },
+  work: { label: "Công việc", color: "#08706a" },
+  personal: { label: "Việc cá nhân", color: "#0f8b8d" },
+  travel: { label: "Di chuyển", color: "#d96c06" },
+  health: { label: "Sức khoẻ", color: "#16a34a" },
+  rest: { label: "Nghỉ ngơi", color: "#f28c28" },
+  study: { label: "Học tập", color: "#3366cc" },
+};
+
 const sampleTasks = [
-  { time: "05:00", task: "Dậy", completed: false },
-  { time: "05:05", task: "Tắm, đánh răng, rửa mặt", completed: false },
-  { time: "05:30", task: "Ăn sáng", completed: false },
-  { time: "05:45", task: "Lên kế hoạch công việc trong ngày", completed: false },
-  { time: "06:00", task: "Ngồi vào bàn làm việc / bắt đầu xử lý việc cá nhân", completed: false },
-  { time: "08:30", task: "Di chuyển đi làm", completed: false },
-  { time: "09:00", task: "Làm ca sáng", completed: false },
-  { time: "12:00", task: "Nghỉ trưa", completed: false },
-  { time: "13:30", task: "Bắt đầu làm việc ca chiều", completed: false },
-  { time: "17:40", task: "Tan làm", completed: false },
-  { time: "17:40", task: "Di chuyển về nhà", completed: false },
-  { time: "18:30", task: "Thể dục / thể thao", completed: false },
-  { time: "19:30", task: "Tắm", completed: false },
-  { time: "20:00", task: "Ăn cơm tối", completed: false },
-  { time: "20:30", task: "Làm việc buổi tối", completed: false },
-  { time: "22:00", task: "Đọc sách", completed: false },
-  { time: "22:30", task: "Vệ sinh cá nhân", completed: false },
-  { time: "23:00", task: "Đi ngủ", completed: false },
+  { time: "05:00", task: "Dậy", type: "routine", completed: false },
+  { time: "05:05", task: "Tắm, đánh răng, rửa mặt", type: "routine", completed: false },
+  { time: "05:30", task: "Ăn sáng", type: "routine", completed: false },
+  { time: "05:45", task: "Lên kế hoạch công việc trong ngày", type: "work", completed: false },
+  { time: "06:00", task: "Ngồi vào bàn làm việc / bắt đầu xử lý việc cá nhân", type: "personal", completed: false },
+  { time: "08:30", task: "Di chuyển đi làm", type: "travel", completed: false },
+  { time: "09:00", task: "Làm ca sáng", type: "work", completed: false },
+  { time: "12:00", task: "Nghỉ trưa", type: "rest", completed: false },
+  { time: "13:30", task: "Bắt đầu làm việc ca chiều", type: "work", completed: false },
+  { time: "17:40", task: "Tan làm", type: "rest", completed: false },
+  { time: "17:40", task: "Di chuyển về nhà", type: "travel", completed: false },
+  { time: "18:30", task: "Thể dục / thể thao", type: "health", completed: false },
+  { time: "19:30", task: "Tắm", type: "routine", completed: false },
+  { time: "20:00", task: "Ăn cơm tối", type: "routine", completed: false },
+  { time: "20:30", task: "Làm việc buổi tối", type: "work", completed: false },
+  { time: "22:00", task: "Đọc sách", type: "study", completed: false },
+  { time: "22:30", task: "Vệ sinh cá nhân", type: "routine", completed: false },
+  { time: "23:00", task: "Đi ngủ", type: "rest", completed: false },
 ];
 
 const els = {
@@ -32,6 +42,7 @@ const els = {
   remainingText: document.querySelector("#remainingText"),
   dayProgressText: document.querySelector("#dayProgressText"),
   dayProgressBar: document.querySelector("#dayProgressBar"),
+  typeStats: document.querySelector("#typeStats"),
   editToggle: document.querySelector("#editToggle"),
   addTaskButton: document.querySelector("#addTaskButton"),
   saveButton: document.querySelector("#saveButton"),
@@ -43,6 +54,7 @@ const els = {
   startInput: document.querySelector("#startInput"),
   endInput: document.querySelector("#endInput"),
   titleInput: document.querySelector("#titleInput"),
+  typeInput: document.querySelector("#typeInput"),
   completedInput: document.querySelector("#completedInput"),
   toast: document.querySelector("#toast"),
 };
@@ -59,8 +71,42 @@ function normalizeTask(raw, index) {
     startTime,
     endTime: endTime || "",
     title: raw.title || raw.task,
+    type: taskTypes[raw.type] ? raw.type : inferTaskType(raw.title || raw.task || ""),
     completed: Boolean(raw.completed),
   };
+}
+
+function inferTaskType(title) {
+  const normalizedTitle = title.toLowerCase();
+  if (normalizedTitle.includes("di chuyển")) return "travel";
+  if (normalizedTitle.includes("thể dục") || normalizedTitle.includes("thể thao") || normalizedTitle.includes("sức khoẻ")) {
+    return "health";
+  }
+  if (normalizedTitle.includes("đọc sách") || normalizedTitle.includes("học")) return "study";
+  if (
+    normalizedTitle.includes("cá nhân") ||
+    normalizedTitle.includes("xử lý việc cá nhân")
+  ) {
+    return "personal";
+  }
+  if (
+    normalizedTitle.includes("dậy") ||
+    normalizedTitle.includes("tắm") ||
+    normalizedTitle.includes("đánh răng") ||
+    normalizedTitle.includes("rửa mặt") ||
+    normalizedTitle.includes("vệ sinh") ||
+    normalizedTitle.includes("ăn")
+  ) {
+    return "routine";
+  }
+  if (
+    normalizedTitle.includes("nghỉ") ||
+    normalizedTitle.includes("ngủ") ||
+    normalizedTitle.includes("tan làm")
+  ) {
+    return "rest";
+  }
+  return "work";
 }
 
 function loadTasks() {
@@ -133,6 +179,7 @@ function render() {
   const activeIndex = getActiveTaskIndex(getCurrentMinutes(now));
   renderHeader(now);
   renderProgress();
+  renderTypeStats();
   renderTasks(activeIndex, formatClock(now));
 }
 
@@ -184,6 +231,12 @@ function renderTasks(activeIndex, nowLabel) {
     title.textContent = task.title;
     taskCell.append(title);
 
+    const typeBadge = document.createElement("span");
+    const typeInfo = taskTypes[task.type] || taskTypes.work;
+    typeBadge.className = `type-badge type-${task.type}`;
+    typeBadge.textContent = typeInfo.label;
+    taskCell.append(typeBadge);
+
     if (index === activeIndex) {
       const nowLine = document.createElement("span");
       nowLine.className = "now-line";
@@ -193,13 +246,6 @@ function renderTasks(activeIndex, nowLabel) {
 
     const statusCell = document.createElement("div");
     statusCell.className = "status-cell";
-
-    if (index === activeIndex) {
-      const badge = document.createElement("span");
-      badge.className = "active-badge";
-      badge.textContent = "Đang diễn ra";
-      taskCell.append(badge);
-    }
 
     const editControls = document.createElement("span");
     editControls.className = "edit-controls";
@@ -224,6 +270,51 @@ function renderTasks(activeIndex, nowLabel) {
   });
 }
 
+function renderTypeStats() {
+  const totals = getTypeDurations();
+  const totalMinutes = Object.values(totals).reduce((sum, value) => sum + value, 0) || 1;
+
+  els.typeStats.innerHTML = "";
+  Object.entries(taskTypes).forEach(([type, info]) => {
+    const minutes = totals[type] || 0;
+    const percent = Math.round((minutes / totalMinutes) * 100);
+    const item = document.createElement("article");
+    item.className = `type-stat type-${type}`;
+    item.innerHTML = `
+      <div class="type-stat-top">
+        <span>${info.label}</span>
+        <strong>${formatDuration(minutes)}</strong>
+      </div>
+      <div class="type-stat-bar" aria-hidden="true">
+        <span style="width: ${percent}%"></span>
+      </div>
+    `;
+    els.typeStats.append(item);
+  });
+}
+
+function getTypeDurations() {
+  return tasks.reduce(
+    (totals, task, index) => {
+      const start = toMinutes(task.startTime);
+      const end = getTaskEndMinutes(index);
+      const duration = Math.max(0, end - start);
+      const type = taskTypes[task.type] ? task.type : "work";
+      totals[type] += duration;
+      return totals;
+    },
+    { routine: 0, work: 0, personal: 0, travel: 0, health: 0, study: 0, rest: 0 },
+  );
+}
+
+function formatDuration(minutes) {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hours && mins) return `${hours}h ${String(mins).padStart(2, "0")}m`;
+  if (hours) return `${hours}h`;
+  return `${mins}m`;
+}
+
 function createMiniButton(label, text, onClick, extraClass = "") {
   const button = document.createElement("button");
   button.type = "button";
@@ -241,6 +332,7 @@ function openTaskDialog(taskId = null) {
   els.startInput.value = task ? task.startTime : "";
   els.endInput.value = task ? task.endTime : "";
   els.titleInput.value = task ? task.title : "";
+  els.typeInput.value = task ? task.type : "routine";
   els.completedInput.checked = task ? task.completed : false;
   if (typeof els.dialog.showModal === "function") {
     els.dialog.showModal();
@@ -276,6 +368,7 @@ function submitTask(event) {
   const startTime = els.startInput.value;
   const endTime = els.endInput.value;
   const title = els.titleInput.value.trim();
+  const type = els.typeInput.value;
   const isEditingExisting = Boolean(editingTaskId);
 
   if (!startTime || !title) return;
@@ -287,7 +380,7 @@ function submitTask(event) {
   if (isEditingExisting) {
     tasks = tasks.map((task) =>
       task.id === editingTaskId
-        ? { ...task, startTime, endTime, title, completed: els.completedInput.checked }
+        ? { ...task, startTime, endTime, title, type, completed: els.completedInput.checked }
         : task,
     );
   } else {
@@ -298,6 +391,7 @@ function submitTask(event) {
       startTime,
       endTime,
       title,
+      type,
       completed: els.completedInput.checked,
     });
   }

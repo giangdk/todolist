@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todolist hằng ngày</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=4" />
+  </head>
+  <body>
+    <main class="phone-shell" aria-label="Ứng dụng Todolist hằng ngày">
+      <section class="app-screen">
+        <header class="header">
+          <div class="hero-copy">
+            <h1>Todolist hằng ngày</h1>
+            <p>Theo dõi công việc trong 1 ngày</p>
+          </div>
+          <div class="top-actions">
+            <button class="pill-button today-button" type="button">
+              <span class="icon icon-calendar" aria-hidden="true"></span>
+              <span>Hôm nay</span>
+              <span class="icon icon-chevron" aria-hidden="true"></span>
+            </button>
+            <article class="current-time-widget" aria-live="polite">
+              <span class="icon icon-clock" aria-hidden="true"></span>
+              <span class="time-divider" aria-hidden="true"></span>
+              <span>
+                <span class="widget-label">Hiện tại</span>
+                <strong id="currentTime">--:--</strong>
+              </span>
+            </article>
+            <button id="editToggle" class="outline-button" type="button" aria-pressed="false">
+              <span class="icon icon-edit" aria-hidden="true"></span>
+              <span>Chỉnh sửa</span>
+            </button>
+          </div>
+        </header>
+
+        <section class="progress-card" aria-label="Tiến độ công việc">
+          <div class="donut" style="--percent: 0">
+            <span id="progressPercent">0%</span>
+            <small>hoàn thành</small>
+          </div>
+          <div class="progress-copy">
+            <strong id="progressCount">0/18</strong>
+            <span>hoàn thành</span>
+            <div class="bar" aria-hidden="true">
+              <span id="taskProgressBar"></span>
+            </div>
+            <p id="remainingText">Còn 18 việc cần hoàn thành</p>
+          </div>
+        </section>
+
+        <section class="day-progress-card" aria-label="Tiến độ trong ngày">
+          <span class="sun-mark" aria-hidden="true"></span>
+          <div>
+            <div class="day-progress-title">
+              <strong>Tiến độ trong ngày</strong>
+              <span id="dayProgressText">0% · Đã qua 0h 00m</span>
+            </div>
+            <div class="bar day-bar" aria-hidden="true">
+              <span id="dayProgressBar"></span>
+            </div>
+          </div>
+          <span class="moon-mark" aria-hidden="true"></span>
+        </section>
+
+        <section class="timeline-card" aria-label="Danh sách công việc dạng timeline">
+          <div class="table-head">
+            <span>Thời gian</span>
+            <span>Việc cần làm</span>
+            <span>Trạng thái</span>
+          </div>
+          <div id="emptyState" class="empty-state" hidden></div>
+          <div id="taskList" class="task-list">
+            <article class="task-row"><div class="time-cell">05:00</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Dậy</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Dậy" /></div></article>
+            <article class="task-row"><div class="time-cell">05:05</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Tắm, đánh răng, rửa mặt</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Tắm, đánh răng, rửa mặt" /></div></article>
+            <article class="task-row"><div class="time-cell">05:30</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Ăn sáng</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Ăn sáng" /></div></article>
+            <article class="task-row"><div class="time-cell">05:45</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Lên kế hoạch công việc trong ngày</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Lên kế hoạch công việc trong ngày" /></div></article>
+            <article class="task-row"><div class="time-cell">06:00</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Ngồi vào bàn làm việc / bắt đầu xử lý việc cá nhân</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Ngồi vào bàn làm việc" /></div></article>
+            <article class="task-row"><div class="time-cell">08:30</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Di chuyển đi làm</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Di chuyển đi làm" /></div></article>
+            <article class="task-row"><div class="time-cell">09:00</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Làm ca sáng</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Làm ca sáng" /></div></article>
+            <article class="task-row"><div class="time-cell">12:00</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Nghỉ trưa</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Nghỉ trưa" /></div></article>
+            <article class="task-row"><div class="time-cell">13:30</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Bắt đầu làm việc ca chiều</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Bắt đầu làm việc ca chiều" /></div></article>
+            <article class="task-row"><div class="time-cell">17:40</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Tan làm</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Tan làm" /></div></article>
+            <article class="task-row"><div class="time-cell">17:40</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Di chuyển về nhà</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Di chuyển về nhà" /></div></article>
+            <article class="task-row"><div class="time-cell">18:30</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Thể dục / thể thao</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Thể dục / thể thao" /></div></article>
+            <article class="task-row"><div class="time-cell">19:30</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Tắm</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Tắm" /></div></article>
+            <article class="task-row"><div class="time-cell">20:00</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Ăn cơm tối</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Ăn cơm tối" /></div></article>
+            <article class="task-row"><div class="time-cell">20:30</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Làm việc buổi tối</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Làm việc buổi tối" /></div></article>
+            <article class="task-row"><div class="time-cell">22:00</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Đọc sách</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Đọc sách" /></div></article>
+            <article class="task-row"><div class="time-cell">22:30</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Vệ sinh cá nhân</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Vệ sinh cá nhân" /></div></article>
+            <article class="task-row"><div class="time-cell">23:00</div><div class="task-cell"><span class="timeline-line" aria-hidden="true"></span><span class="timeline-dot" aria-hidden="true"></span><span class="task-title">Đi ngủ</span></div><div class="status-cell"><input class="status-check" type="checkbox" aria-label="Đánh dấu Đi ngủ" /></div></article>
+          </div>
+        </section>
+
+        <footer class="bottom-actions">
+          <button id="addTaskButton" class="outline-button add-inline" type="button">
+            <span class="icon icon-plus-box" aria-hidden="true"></span>
+            <span>Thêm việc</span>
+          </button>
+          <button id="saveButton" class="pill-button save-button" type="button">
+            <span class="icon icon-save" aria-hidden="true"></span>
+            <span>Lưu danh sách</span>
+          </button>
+        </footer>
+
+      </section>
+    </main>
+
+    <dialog id="taskDialog" class="task-dialog">
+      <form id="taskForm" method="dialog">
+        <div class="dialog-head">
+          <h2 id="dialogTitle">Thêm việc</h2>
+          <button class="icon-button" value="cancel" type="button" id="closeDialog" aria-label="Đóng">
+            <span class="icon icon-close" aria-hidden="true"></span>
+          </button>
+        </div>
+        <label>
+          <span>Giờ bắt đầu</span>
+          <input id="startInput" type="time" required />
+        </label>
+        <label>
+          <span>Giờ kết thúc</span>
+          <input id="endInput" type="time" />
+        </label>
+        <label>
+          <span>Tên công việc</span>
+          <input id="titleInput" type="text" required maxlength="120" placeholder="Nhập việc cần làm" />
+        </label>
+        <label class="checkbox-row">
+          <input id="completedInput" type="checkbox" />
+          <span>Đã hoàn thành</span>
+        </label>
+        <div class="dialog-actions">
+          <button class="outline-button" type="button" id="cancelTask">Hủy</button>
+          <button class="pill-button save-button" type="submit">Lưu việc</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="app.js?v=4"></script>
+  </body>
+</html>
